@@ -228,9 +228,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         try {
-            String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta  a eliminar: ");           
-            Registry myreg = LocateRegistry.getRegistry("192.168.1.20", port);
-            FSInterface inter = (FSInterface) myreg.lookup("remoteObject");            
+            String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta  a eliminar: ");            
             boolean bool = inter.removeDirectoryOrFile("./C/"+ruta);
             System.out.println("directory deleted :" + bool);
             load();
@@ -242,7 +240,14 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3MouseClicked
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            String target = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
+            String location = JOptionPane.showInputDialog(this, "Nueva Ubicacion: ");
+            boolean borrado = inter.removeDirectoryOrFile("./C/"+target);
+            boolean movido = inter.createDirectory("./C/"+location+"/"+target);
+            load();
+        } catch (Exception e) { }
     }//GEN-LAST:event_jButton4MouseClicked
 
     /**
