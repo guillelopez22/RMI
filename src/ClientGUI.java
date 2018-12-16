@@ -1,7 +1,10 @@
 
 import java.io.File;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -194,17 +197,11 @@ public class ClientGUI extends javax.swing.JFrame {
             mensaje.pack();
             mensaje.setVisible(true);
             mensaje.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-            DefaultMutableTreeNode root = new DefaultMutableTreeNode("server:", true);
-            File[] files = inter.listFiles("./C");
-            for (int i = 0; i < files.length; i++) {
-                System.out.println(files[i].getName());
-            }
-            System.out.println(files[0].getName());
-            fillTree(root, files[0].getParentFile());
-            tree = new JTree(root);
-            jt_directory.setModel(tree.getModel());
             
+            //fillTree(root, files[0].getParentFile());
+            load();
             
+
         } catch (Exception e) {
             ta_mensaje.setText("Something went wrong");
         }
@@ -218,12 +215,7 @@ public class ClientGUI extends javax.swing.JFrame {
             String nombre = JOptionPane.showInputDialog(this, "Ingrese nombre del directorio: ");
             boolean bool = inter.createDirectory("./C/" + ruta + "/" + nombre);
             System.out.println("directory created :" + bool);
-            DefaultMutableTreeNode root = new DefaultMutableTreeNode("server:", true);
-            File[] files = inter.listFiles("./C");
-            System.out.println(files[0].getName());
-            fillTree(root, files[0].getParentFile());
-            tree = new JTree(root);
-            jt_directory.setModel(tree.getModel());
+            load();
             if (!bool) {
                 JOptionPane.showMessageDialog(this, "El Directorio ya Existe! ");
             }
@@ -241,6 +233,7 @@ public class ClientGUI extends javax.swing.JFrame {
             FSInterface inter = (FSInterface) myreg.lookup("remoteObject");            
             boolean bool = inter.removeDirectoryOrFile("./C/"+ruta);
             System.out.println("directory deleted :" + bool);
+            load();
             if(!bool){
             JOptionPane.showMessageDialog(this,"El Directorio No Existe! ");
             }
@@ -285,6 +278,32 @@ public class ClientGUI extends javax.swing.JFrame {
                 new ClientGUI().setVisible(true);
             }
         });
+    }
+    public void load(){
+        try {
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("server:", true);
+            File[] files = inter.listFiles("./C");
+            fillTree1(root, files);
+            tree = new JTree(root);
+            jt_directory.setModel(tree.getModel());
+        } catch (RemoteException ex) {}
+        
+    }
+    public void fillTree1(DefaultMutableTreeNode dir, File[] files) {
+        DefaultMutableTreeNode child;
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].getPath().contains(".txt")) {
+                child = new DefaultMutableTreeNode(files[i].getName());
+                dir.add(child);
+            }else{
+                try {
+                    child = new DefaultMutableTreeNode(files[i].getName());
+                    dir.add(child);
+                    fillTree1(child, inter.listFiles(files[i].getPath()));
+                } catch (RemoteException ex) {}
+            }
+
+        }
     }
     public void fillTree(DefaultMutableTreeNode dir, File f){
         if (!f.isDirectory()) {
