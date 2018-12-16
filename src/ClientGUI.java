@@ -242,10 +242,13 @@ public class ClientGUI extends javax.swing.JFrame {
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         try {
             // TODO add your handling code here:
-            String target = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
+            String nombre = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
+            String target = JOptionPane.showInputDialog(this, "Ubicacion de Archivo: ");
             String location = JOptionPane.showInputDialog(this, "Nueva Ubicacion: ");
-            boolean borrado = inter.removeDirectoryOrFile("./C/"+target);
-            boolean movido = inter.createDirectory("./C/"+location+"/"+target);
+            boolean borrado = inter.removeDirectoryOrFile("./C/"+target+"/"+nombre);
+            boolean movido = inter.createDirectory("./C/"+location+"/"+nombre);
+            System.out.println("Borrado: "+borrado);
+            System.out.println("Movido: "+movido);
             load();
         } catch (Exception e) { }
     }//GEN-LAST:event_jButton4MouseClicked
