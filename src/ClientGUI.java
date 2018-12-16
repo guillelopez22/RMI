@@ -42,6 +42,15 @@ public class ClientGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         ta_mensaje = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
+        jDialog1 = new javax.swing.JDialog();
+        jLabel3 = new javax.swing.JLabel();
+        txt_name = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txta_mensaje = new javax.swing.JTextArea();
+        jButton8 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txt_ruta = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -82,6 +91,69 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLabel3.setText("Nombre del archivo:");
+
+        txta_mensaje.setColumns(20);
+        txta_mensaje.setRows(5);
+        jScrollPane2.setViewportView(txta_mensaje);
+
+        jButton8.setText("Crear Archivo");
+        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton8MouseClicked(evt);
+            }
+        });
+
+        jLabel4.setText("Ruta:");
+
+        jLabel5.setText("Crear Archivo");
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialog1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton8))
+                    .addGroup(jDialog1Layout.createSequentialGroup()
+                        .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txt_name)
+                            .addComponent(txt_ruta, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addGap(180, 180, 180)
+                .addComponent(jLabel5)
+                .addContainerGap(174, Short.MAX_VALUE))
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txt_ruta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton8)
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("CONNECT");
@@ -119,6 +191,11 @@ public class ClientGUI extends javax.swing.JFrame {
         });
 
         jButton5.setText("Create File");
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
 
         jButton6.setText("Edit File");
 
@@ -189,7 +266,7 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
 
             ta_mensaje.setVisible(true);
-            myreg = LocateRegistry.getRegistry("192.168.1.20", port);
+            myreg = LocateRegistry.getRegistry("192.168.1.3", port);
             inter = (FSInterface) myreg.lookup("remoteObject");
             ta_mensaje.setText("Servicio Listo =)");
 
@@ -252,6 +329,29 @@ public class ClientGUI extends javax.swing.JFrame {
             load();
         } catch (Exception e) { }
     }//GEN-LAST:event_jButton4MouseClicked
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // TODO add your handling code here:
+        this.jDialog1.setModal(true);
+        this.jDialog1.pack();
+        this.jDialog1.setVisible(true);
+        mensaje.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
+        try {
+            // TODO add your handling code here:
+            String nombre= txt_name.getText();
+            String ruta=txt_ruta.getText();
+            String mensaje= "0\n"+txta_mensaje.getText();
+            byte[] b = mensaje.getBytes();            
+            inter.uploadFileToServer(b,"./C/"+ruta+"/"+nombre+".txt",b.length);
+            JOptionPane.showConfirmDialog(this,"Archivo Creado");
+        } catch (RemoteException ex) {
+            Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_jButton8MouseClicked
 
     /**
      * @param args the command line arguments
@@ -336,13 +436,22 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTree jt_directory;
     private javax.swing.JDialog mensaje;
     private javax.swing.JTextArea ta_mensaje;
+    private javax.swing.JTextField txt_name;
+    private javax.swing.JTextField txt_ruta;
+    private javax.swing.JTextArea txta_mensaje;
     // End of variables declaration//GEN-END:variables
     static int port = 6000;
     static Registry myreg;

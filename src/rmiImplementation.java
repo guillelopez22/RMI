@@ -26,8 +26,9 @@ public class rmiImplementation extends UnicastRemoteObject implements FSInterfac
         try {
             File serverpathfile = new File(serverpath);
             FileOutputStream out = new FileOutputStream(serverpathfile);
-            byte[] data = mydata;
-
+            String val= "0";
+            byte[] val1= val.getBytes();
+            byte[] data = mydata;            
             out.write(data);
             out.flush();
             out.close();
