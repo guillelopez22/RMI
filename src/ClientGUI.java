@@ -277,6 +277,11 @@ public class ClientGUI extends javax.swing.JFrame {
         });
 
         jButton7.setText("Shutdown");
+        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton7MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -498,6 +503,13 @@ public class ClientGUI extends javax.swing.JFrame {
             Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton9MouseClicked
+
+    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this,"Hasta Luego!");
+        System.exit(0);
+        
+    }//GEN-LAST:event_jButton7MouseClicked
 
     /**
      * @param args the command line arguments
