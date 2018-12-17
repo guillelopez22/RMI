@@ -403,10 +403,18 @@ public class ClientGUI extends javax.swing.JFrame {
             String nombre = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
             String target = JOptionPane.showInputDialog(this, "Ubicacion de Archivo: ");
             String location = JOptionPane.showInputDialog(this, "Nueva Ubicacion: ");
-            boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
-            boolean movido = inter.createDirectory("./C/" + location + "/" + nombre);
-            System.out.println("Borrado: " + borrado);
-            System.out.println("Movido: " + movido);
+            if (!nombre.contains(".txt")) {
+                boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
+                boolean movido = inter.createDirectory("./C/" + location + "/" + nombre);
+                System.out.println("Borrado: " + borrado);
+                System.out.println("Movido: " + movido);
+            }else {
+                byte[] copy = inter.downloadFileFromServer("./C/" + target + "/" + nombre);
+                boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
+                inter.uploadFileToServer(copy, "./C/" + location + "/" + nombre, copy.length);
+                
+            }
+
             load();
         } catch (Exception e) {
         }
@@ -461,9 +469,7 @@ public class ClientGUI extends javax.swing.JFrame {
             //Validation
             if (!validate.equals("0")) {
                 JOptionPane.showMessageDialog(this, "ARCHIVO BLOQUEADO");
-                           
-                
-                
+
             } else {
                 //Cambiar Bit validacion
                 String contents = new String(Files.readAllBytes(Paths.get("./cache/" + target)));
@@ -471,7 +477,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 for (int i = 1; i < contents.length(); i++) {
                     newF = newF + contents.charAt(i);
                 }
-                System.out.println("File contents: "+newF);
+                System.out.println("File contents: " + newF);
                 inter.uploadFileToServer(newF.getBytes(), "./C/" + location + "/" + target, newF.length());
                 txt_name1.setText(target);
                 ta_data.setText(new String(datos));
@@ -506,9 +512,9 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this,"Hasta Luego!");
+        JOptionPane.showMessageDialog(this, "Hasta Luego!");
         System.exit(0);
-        
+
     }//GEN-LAST:event_jButton7MouseClicked
 
     /**
