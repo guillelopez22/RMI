@@ -359,8 +359,8 @@ public class ClientGUI extends javax.swing.JFrame {
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         try {
             ta_mensaje.setVisible(true);
-            myreg = LocateRegistry.getRegistry("192.168.0.14", port);
-            
+            myreg = LocateRegistry.getRegistry( "172.16.17.96" ,port);
+            //"192.168.0.14"
             inter = (FSInterface) myreg.lookup("remoteObject");
             ta_mensaje.setText("Servicio Listo =)");
             
@@ -555,7 +555,7 @@ public class ClientGUI extends javax.swing.JFrame {
             inter.uploadFileToServer(b, "./C/" + location + "/" + nombre, b.length);
             JOptionPane.showMessageDialog(this, "Archivo Editado");
             inter.addBinnacle("[Client " + this.idClient + "] The file \"" + target + "\" has been modified");
-            
+            jd_editFile.dispose();
             txt_name.setText("");
             txt_ruta.setText("");
             txta_mensaje.setText("");
