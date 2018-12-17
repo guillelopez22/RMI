@@ -8,6 +8,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -461,11 +465,21 @@ public class ClientGUI extends javax.swing.JFrame {
             BufferedReader br = new BufferedReader(new FileReader(cachedFile));
             String validate = br.readLine();
             System.out.println("VALIDATING: " + validate);
-            //Cambiar Bit validacion
-            
+            //Validation
             if (!validate.equals("0")) {
                 JOptionPane.showMessageDialog(this, "ERROR");
+                           
+                
+                
             } else {
+                //Cambiar Bit validacion
+                String contents = new String(Files.readAllBytes(Paths.get("./cache/" + target)));
+                String newF = "1";
+                for (int i = 1; i < contents.length(); i++) {
+                    newF = newF + contents.charAt(i);
+                }
+                System.out.println("File contents: "+newF);
+                inter.uploadFileToServer(newF.getBytes(), "./C/" + location + "/" + target, newF.length());
                 nombre.setText(target);
                 ruta.setText(location);
                 ta_data.setText(new String(datos));
@@ -477,6 +491,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
 
         } catch (Exception e) {
+            System.out.println(e);
         }
 
     }//GEN-LAST:event_jButton6MouseClicked
