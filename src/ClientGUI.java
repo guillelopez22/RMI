@@ -227,6 +227,14 @@ public class ClientGUI extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jButton1.setText("CONNECT");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -343,12 +351,16 @@ public class ClientGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Connect
+     *
+     * @param evt Conecta al servidor en el puerto preestablecido
+     */
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        // TODO add your handling code here:
         try {
-
             ta_mensaje.setVisible(true);
-            myreg = LocateRegistry.getRegistry("192.168.1.3", port);
+            myreg = LocateRegistry.getRegistry("192.168.0.14", port);
+
             inter = (FSInterface) myreg.lookup("remoteObject");
             ta_mensaje.setText("Servicio Listo =)");
 
@@ -356,6 +368,8 @@ public class ClientGUI extends javax.swing.JFrame {
             mensaje.pack();
             mensaje.setVisible(true);
             mensaje.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            this.idClient = inter.addClient();
+            inter.addBinnacle("Client " + this.idClient + ": Client connected.");
 
             //fillTree(root, files[0].getParentFile());
             load();
@@ -369,9 +383,16 @@ public class ClientGUI extends javax.swing.JFrame {
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // TODO add your handling code here:
         try {
-            String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta (Vacio es C:): ");
             String nombre = JOptionPane.showInputDialog(this, "Ingrese nombre del directorio: ");
+            if (nombre.replaceAll(" ", "").isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Campo vacío.");
+                throw new Exception("Vacio");
+            }
+            String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta (Vacio es C:): ");
             boolean bool = inter.createDirectory("./C/" + ruta + "/" + nombre);
+            if (bool) {
+                inter.addBinnacle("Client " + this.idClient + ": The directory \"./C/" + ruta + "" + nombre + "\" has been created.");
+            }
             System.out.println("directory created :" + bool);
             load();
             if (!bool) {
@@ -389,6 +410,9 @@ public class ClientGUI extends javax.swing.JFrame {
             String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta  a eliminar: ");
             boolean bool = inter.removeDirectoryOrFile("./C/" + ruta);
             System.out.println("directory deleted :" + bool);
+            if (bool) {
+                inter.addBinnacle("Client " + this.idClient + ": The directory \"./C" + ruta + "\" has been deleted.");
+            }
             load();
             if (!bool) {
                 JOptionPane.showMessageDialog(this, "El Directorio No Existe! ");
@@ -401,6 +425,10 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             String nombre = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
+            if (nombre.replaceAll(" ", "").isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Campo vacío.");
+                throw new Exception("Vacio");
+            }
             String target = JOptionPane.showInputDialog(this, "Ubicacion de Archivo: ");
             String location = JOptionPane.showInputDialog(this, "Nueva Ubicacion: ");
             if (!nombre.contains(".txt")) {
@@ -408,13 +436,17 @@ public class ClientGUI extends javax.swing.JFrame {
                 boolean movido = inter.createDirectory("./C/" + location + "/" + nombre);
                 System.out.println("Borrado: " + borrado);
                 System.out.println("Movido: " + movido);
-            }else {
+                if (movido && borrado) {
+                    inter.addBinnacle("Client " + this.idClient + ": The file \"" + nombre + "\" has been moved from \"./C/" + target + "\" to \"./C/" + location + "\".");
+                }
+            } else {
                 byte[] copy = inter.downloadFileFromServer("./C/" + target + "/" + nombre);
                 boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
                 inter.uploadFileToServer(copy, "./C/" + location + "/" + nombre, copy.length);
-                
+                if (borrado) {
+                    inter.addBinnacle("Client " + this.idClient + ": The file \"" + nombre + "\" has been moved from \"./C/" + target + "\" to \"./C/" + location + "\".");
+                }
             }
-
             load();
         } catch (Exception e) {
         }
@@ -433,11 +465,16 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             String nombre = txt_name.getText();
+            if (nombre.replaceAll(" ", "").isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Campo vacío.");
+                throw new Exception("Vacio");
+            }
             String ruta = txt_ruta.getText();
             String mensaje = "0\r\n" + txta_mensaje.getText();
             byte[] b = mensaje.getBytes();
             inter.uploadFileToServer(b, "./C/" + ruta + "/" + nombre + ".txt", b.length);
             JOptionPane.showMessageDialog(this, "Archivo Creado");
+            inter.addBinnacle("Client " + this.idClient + ": The file \"" + nombre + "\" has been created at \"./C/" + ruta + "\".");
             txt_name.setText("");
             txt_ruta.setText("");
             txta_mensaje.setText("");
@@ -445,6 +482,7 @@ public class ClientGUI extends javax.swing.JFrame {
             load();
         } catch (RemoteException ex) {
             Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
         }
 
     }//GEN-LAST:event_jButton8MouseClicked
@@ -453,6 +491,10 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             target = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
+            if (target.replaceAll(" ", "").isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Campo vacío.");
+                throw new Exception("Vacio");
+            }
             location = JOptionPane.showInputDialog(this, "Ubicacion de Archivo: ");
             datos = inter.downloadFileFromServer("./C/" + location + "/" + target);
             //servidor ->cliente:cache
@@ -469,7 +511,6 @@ public class ClientGUI extends javax.swing.JFrame {
             //Validation
             if (!validate.equals("0")) {
                 JOptionPane.showMessageDialog(this, "ARCHIVO BLOQUEADO");
-
             } else {
                 //Cambiar Bit validacion
                 String contents = new String(Files.readAllBytes(Paths.get("./cache/" + target)));
@@ -479,6 +520,8 @@ public class ClientGUI extends javax.swing.JFrame {
                 }
                 System.out.println("File contents: " + newF);
                 inter.uploadFileToServer(newF.getBytes(), "./C/" + location + "/" + target, newF.length());
+                //inter.addBinnacle("Client " + this.idClient + ": The file \"" + target + "\" has been modified");
+
                 txt_name1.setText(target);
                 ta_data.setText(new String(datos));
 
@@ -489,7 +532,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
 
         } catch (Exception e) {
-            System.out.println(e);
+            //System.out.println(e);
         }
 
     }//GEN-LAST:event_jButton6MouseClicked
@@ -498,24 +541,50 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             String nombre = txt_name1.getText();
+            if (nombre.replaceAll(" ", "").isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Campo vacío.");
+                throw new Exception("Vacio");
+            }
             String mensaje = ta_data.getText();
             byte[] b = mensaje.getBytes();
             inter.uploadFileToServer(b, "./C/" + location + "/" + nombre, b.length);
             JOptionPane.showMessageDialog(this, "Archivo Editado");
+            inter.addBinnacle("Client " + this.idClient + ": The file \"" + target + "\" has been modified");
+
             txt_name.setText("");
             txt_ruta.setText("");
             txta_mensaje.setText("");
         } catch (RemoteException ex) {
             Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
         }
     }//GEN-LAST:event_jButton9MouseClicked
 
     private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "Hasta Luego!");
+        try {
+            inter.addBinnacle("Client " + this.idClient + ": This client has disconnected.");
+        } catch (Exception ex) {
+        }
         System.exit(0);
 
     }//GEN-LAST:event_jButton7MouseClicked
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        JOptionPane.showMessageDialog(this, "Hasta Luego!");
+        try {
+            inter.addBinnacle("Client " + this.idClient + ": This client has disconnected.");
+        } catch (Exception ex) {
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        try {
+            inter.addBinnacle("Client " + this.idClient + ": This client has disconnected.");
+        } catch (Exception ex) {
+        }
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
@@ -636,4 +705,5 @@ public class ClientGUI extends javax.swing.JFrame {
     static String target = "", location = "";
     JTree tree;
     byte datos[];
+    int idClient = 0;
 }

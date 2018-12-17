@@ -1,6 +1,9 @@
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -87,16 +90,29 @@ public class ServerGUI extends javax.swing.JFrame {
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
         try {
-            
-            Registry reg = LocateRegistry.createRegistry(port);   
+            if (!connnected) {
+                Registry reg = LocateRegistry.createRegistry(port);
 
-            rmiImplementation imp = new rmiImplementation("./C");
-            reg.bind("remoteObject", imp);
-            ta_status.setText("Server is up and running on port: " + port);
-            
+                rmiImplementation imp = new rmiImplementation("./C");
+                reg.bind("remoteObject", imp);
+                inter = (FSInterface) reg.lookup("remoteObject");
+                inter.setServerConsole(ta_status);
+
+                // Interaccion con la consola
+                inter.addBinnacle("Server: Server is up and running on port: " + port);
+                connnected = true;
+
+            } else {
+                inter.addBinnacle("Server: Server is already up and running on port: " + port);
+            }
         } catch (Exception e) {
-            ta_status.setText("Server launch failed: "+e);
+            try {
+                inter.addBinnacle("Server: Server launch failed: " + e.getMessage());
+            } catch (Exception ex) {
+                System.out.println("Server launch failed: " + e.getMessage());
+            }
         }
+
     }//GEN-LAST:event_jButton1MouseClicked
 
     /**
@@ -142,4 +158,6 @@ public class ServerGUI extends javax.swing.JFrame {
     private javax.swing.JTextArea ta_status;
     // End of variables declaration//GEN-END:variables
     static int port = 6000;
+    static boolean connnected = false;
+    static FSInterface inter;
 }
