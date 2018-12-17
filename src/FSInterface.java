@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-
 import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -24,4 +23,10 @@ public interface FSInterface extends Remote {
     public boolean createDirectory(String serverpath) throws RemoteException;
 
     public boolean removeDirectoryOrFile(String serverpath) throws RemoteException;
+
+    public void addBinnacle(String binnacle) throws RemoteException;
+
+    public void setServerConsole(javax.swing.JTextArea console) throws RemoteException;
+    
+    public int addClient() throws RemoteException;
 }

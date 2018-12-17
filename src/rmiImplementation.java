@@ -10,19 +10,27 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ *
+ * @author crist
+ */
 public class rmiImplementation extends UnicastRemoteObject implements FSInterface, Serializable {
+
+    javax.swing.JTextArea console;
+    String binnacle = "";
+    int idClient = 0;
 
     protected rmiImplementation(String s) throws RemoteException {
         File storageDir = new File(s);
         File cache = new File("./cache");
         if (!cache.exists()) {
             cache.mkdir();
-        }else{
+        } else {
             System.out.println("Ya existe la cache");
         }
         if (!storageDir.exists()) {
             storageDir.mkdir();
-        }else{
+        } else {
             System.out.println("Ya existe el directorio");
         }
     }
@@ -32,7 +40,7 @@ public class rmiImplementation extends UnicastRemoteObject implements FSInterfac
         try {
             File serverpathfile = new File(serverpath);
             FileOutputStream out = new FileOutputStream(serverpathfile);
-            byte[] data = mydata;            
+            byte[] data = mydata;
             out.write(data);
             out.flush();
             out.close();
@@ -85,16 +93,32 @@ public class rmiImplementation extends UnicastRemoteObject implements FSInterfac
 
     public boolean createDirectory(String serverpath) throws RemoteException {
         File serverpathdir = new File(serverpath);
-        
+
         return serverpathdir.mkdirs();
 
     }
-    
 
     public boolean removeDirectoryOrFile(String serverpath) throws RemoteException {
         File serverpathdir = new File(serverpath);
         return serverpathdir.delete();
 
+    }
+
+    public void addBinnacle(String binnacle) throws RemoteException {
+        this.binnacle += "\n" + binnacle;
+        try {
+            console.setText(this.binnacle);
+        } catch (Exception e) {
+        }
+    }
+
+    public void setServerConsole(javax.swing.JTextArea console) throws RemoteException {
+        this.console = console;
+    }
+
+    public int addClient() throws RemoteException {
+        this.idClient++;
+        return this.idClient;
     }
 
 }
