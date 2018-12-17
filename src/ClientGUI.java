@@ -1,8 +1,17 @@
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -51,6 +60,15 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         txt_ruta = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+        jd_editFile = new javax.swing.JDialog();
+        jLabel6 = new javax.swing.JLabel();
+        ruta = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        nombre = new javax.swing.JTextField();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ta_data = new javax.swing.JTextArea();
+        jButton9 = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -154,6 +172,68 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jLabel6.setText("Ruta:");
+
+        jLabel7.setText("Nombre del archivo:");
+
+        ta_data.setColumns(20);
+        ta_data.setRows(5);
+        jScrollPane4.setViewportView(ta_data);
+
+        jButton9.setText("Editar Archivo");
+        jButton9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton9MouseClicked(evt);
+            }
+        });
+
+        jLabel8.setText("Edit File");
+
+        javax.swing.GroupLayout jd_editFileLayout = new javax.swing.GroupLayout(jd_editFile.getContentPane());
+        jd_editFile.getContentPane().setLayout(jd_editFileLayout);
+        jd_editFileLayout.setHorizontalGroup(
+            jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_editFileLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_editFileLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton9))
+                    .addGroup(jd_editFileLayout.createSequentialGroup()
+                        .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(nombre)
+                            .addComponent(ruta, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(jd_editFileLayout.createSequentialGroup()
+                .addGap(142, 142, 142)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jd_editFileLayout.setVerticalGroup(
+            jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_editFileLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(ruta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton9))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("CONNECT");
@@ -183,7 +263,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setText("Move Dir");
+        jButton4.setText("Move");
         jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton4MouseClicked(evt);
@@ -198,6 +278,11 @@ public class ClientGUI extends javax.swing.JFrame {
         });
 
         jButton6.setText("Edit File");
+        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton6MouseClicked(evt);
+            }
+        });
 
         jButton7.setText("Shutdown");
 
@@ -274,10 +359,9 @@ public class ClientGUI extends javax.swing.JFrame {
             mensaje.pack();
             mensaje.setVisible(true);
             mensaje.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-            
+
             //fillTree(root, files[0].getParentFile());
             load();
-            
 
         } catch (Exception e) {
             ta_mensaje.setText("Something went wrong");
@@ -305,12 +389,12 @@ public class ClientGUI extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         try {
-            String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta  a eliminar: ");            
-            boolean bool = inter.removeDirectoryOrFile("./C/"+ruta);
+            String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta  a eliminar: ");
+            boolean bool = inter.removeDirectoryOrFile("./C/" + ruta);
             System.out.println("directory deleted :" + bool);
             load();
-            if(!bool){
-            JOptionPane.showMessageDialog(this,"El Directorio No Existe! ");
+            if (!bool) {
+                JOptionPane.showMessageDialog(this, "El Directorio No Existe! ");
             }
         } catch (Exception e) {
         }
@@ -322,36 +406,84 @@ public class ClientGUI extends javax.swing.JFrame {
             String nombre = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
             String target = JOptionPane.showInputDialog(this, "Ubicacion de Archivo: ");
             String location = JOptionPane.showInputDialog(this, "Nueva Ubicacion: ");
-            boolean borrado = inter.removeDirectoryOrFile("./C/"+target+"/"+nombre);
-            boolean movido = inter.createDirectory("./C/"+location+"/"+nombre);
-            System.out.println("Borrado: "+borrado);
-            System.out.println("Movido: "+movido);
+            boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
+            boolean movido = inter.createDirectory("./C/" + location + "/" + nombre);
+            System.out.println("Borrado: " + borrado);
+            System.out.println("Movido: " + movido);
             load();
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         // TODO add your handling code here:
-        this.jDialog1.setModal(true);
-        this.jDialog1.pack();
-        this.jDialog1.setVisible(true);
-        mensaje.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+        jDialog1.setModal(true);
+        jDialog1.pack();
+        jDialog1.setVisible(true);
+        jDialog1.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
         try {
             // TODO add your handling code here:
-            String nombre= txt_name.getText();
-            String ruta=txt_ruta.getText();
-            String mensaje= "0\n"+txta_mensaje.getText();
-            byte[] b = mensaje.getBytes();            
-            inter.uploadFileToServer(b,"./C/"+ruta+"/"+nombre+".txt",b.length);
-            JOptionPane.showConfirmDialog(this,"Archivo Creado");
+            String nombre = txt_name.getText();
+            String ruta = txt_ruta.getText();
+            String mensaje = "0\r\n" + txta_mensaje.getText();
+            byte[] b = mensaje.getBytes();
+            inter.uploadFileToServer(b, "./C/" + ruta + "/" + nombre + ".txt", b.length);
+            JOptionPane.showMessageDialog(this, "Archivo Creado");
+            txt_name.setText("");
+            txt_ruta.setText("");
+            txta_mensaje.setText("");
+            jDialog1.dispose();
+            load();
         } catch (RemoteException ex) {
             Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }//GEN-LAST:event_jButton8MouseClicked
+
+    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
+        try {
+            // TODO add your handling code here:
+            target = JOptionPane.showInputDialog(this, "Archivo Deseado: ");
+            location = JOptionPane.showInputDialog(this, "Ubicacion de Archivo: ");
+            datos = inter.downloadFileFromServer("./C/" + location + "/" + target);
+            //servidor ->cliente:cache
+            File file = new File("./cache/" + target);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(datos);
+            fos.close();
+
+            //cache:file -> Editor
+            File cachedFile = new File("./cache/" + target);
+            BufferedReader br = new BufferedReader(new FileReader(cachedFile));
+            String validate = br.readLine();
+            System.out.println("VALIDATING: " + validate);
+            //Cambiar Bit validacion
+            
+            if (!validate.equals("0")) {
+                JOptionPane.showMessageDialog(this, "ERROR");
+            } else {
+                nombre.setText(target);
+                ruta.setText(location);
+                ta_data.setText(new String(datos));
+
+                jd_editFile.setModal(true);
+                jd_editFile.pack();
+                jd_editFile.setVisible(true);
+                jd_editFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            }
+
+        } catch (Exception e) {
+        }
+
+    }//GEN-LAST:event_jButton6MouseClicked
+
+    private void jButton9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton9MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton9MouseClicked
 
     /**
      * @param args the command line arguments
@@ -387,37 +519,42 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
     }
-    public void load(){
+
+    public void load() {
         try {
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("server:", true);
             File[] files = inter.listFiles("./C");
             fillTree1(root, files);
             tree = new JTree(root);
             jt_directory.setModel(tree.getModel());
-        } catch (RemoteException ex) {}
-        
+        } catch (RemoteException ex) {
+        }
+
     }
+
     public void fillTree1(DefaultMutableTreeNode dir, File[] files) {
         DefaultMutableTreeNode child;
         for (int i = 0; i < files.length; i++) {
             if (files[i].getPath().contains(".txt")) {
                 child = new DefaultMutableTreeNode(files[i].getName());
                 dir.add(child);
-            }else{
+            } else {
                 try {
                     child = new DefaultMutableTreeNode(files[i].getName());
                     dir.add(child);
                     fillTree1(child, inter.listFiles(files[i].getPath()));
-                } catch (RemoteException ex) {}
+                } catch (RemoteException ex) {
+                }
             }
 
         }
     }
-    public void fillTree(DefaultMutableTreeNode dir, File f){
+
+    public void fillTree(DefaultMutableTreeNode dir, File f) {
         if (!f.isDirectory()) {
             DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
             dir.add(child);
-        }else{
+        } else {
             DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
             dir.add(child);
             File fList[] = f.listFiles();
@@ -425,8 +562,8 @@ public class ClientGUI extends javax.swing.JFrame {
                 fillTree(child, fList[i]);
             }
         }
-    }                                                                                                                                                                                           
-    
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -437,24 +574,36 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JDialog jd_editFile;
     private javax.swing.JTree jt_directory;
     private javax.swing.JDialog mensaje;
+    private javax.swing.JTextField nombre;
+    private javax.swing.JTextField ruta;
+    private javax.swing.JTextArea ta_data;
     private javax.swing.JTextArea ta_mensaje;
     private javax.swing.JTextField txt_name;
     private javax.swing.JTextField txt_ruta;
     private javax.swing.JTextArea txta_mensaje;
     // End of variables declaration//GEN-END:variables
+    File cachedFile;
     static int port = 6000;
     static Registry myreg;
     static FSInterface inter;
+    static String target = "", location = "";
     JTree tree;
+    byte datos[];
 }

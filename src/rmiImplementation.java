@@ -14,6 +14,12 @@ public class rmiImplementation extends UnicastRemoteObject implements FSInterfac
 
     protected rmiImplementation(String s) throws RemoteException {
         File storageDir = new File(s);
+        File cache = new File("./cache");
+        if (!cache.exists()) {
+            cache.mkdir();
+        }else{
+            System.out.println("Ya existe la cache");
+        }
         if (!storageDir.exists()) {
             storageDir.mkdir();
         }else{
@@ -26,8 +32,6 @@ public class rmiImplementation extends UnicastRemoteObject implements FSInterfac
         try {
             File serverpathfile = new File(serverpath);
             FileOutputStream out = new FileOutputStream(serverpathfile);
-            String val= "0";
-            byte[] val1= val.getBytes();
             byte[] data = mydata;            
             out.write(data);
             out.flush();
