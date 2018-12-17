@@ -65,10 +65,8 @@ public class ClientGUI extends javax.swing.JFrame {
         txt_ruta = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jd_editFile = new javax.swing.JDialog();
-        jLabel6 = new javax.swing.JLabel();
-        ruta = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        nombre = new javax.swing.JTextField();
+        txt_name1 = new javax.swing.JTextField();
         jScrollPane4 = new javax.swing.JScrollPane();
         ta_data = new javax.swing.JTextArea();
         jButton9 = new javax.swing.JButton();
@@ -176,8 +174,6 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jLabel6.setText("Ruta:");
-
         jLabel7.setText("Nombre del archivo:");
 
         ta_data.setColumns(20);
@@ -205,13 +201,9 @@ public class ClientGUI extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton9))
                     .addGroup(jd_editFileLayout.createSequentialGroup()
-                        .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6))
+                        .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(nombre)
-                            .addComponent(ruta, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txt_name1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jd_editFileLayout.createSequentialGroup()
@@ -224,16 +216,12 @@ public class ClientGUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_editFileLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jd_editFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(ruta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txt_name1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton9))
         );
@@ -467,7 +455,7 @@ public class ClientGUI extends javax.swing.JFrame {
             System.out.println("VALIDATING: " + validate);
             //Validation
             if (!validate.equals("0")) {
-                JOptionPane.showMessageDialog(this, "ERROR");
+                JOptionPane.showMessageDialog(this, "ARCHIVO BLOQUEADO");
                            
                 
                 
@@ -480,8 +468,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 }
                 System.out.println("File contents: "+newF);
                 inter.uploadFileToServer(newF.getBytes(), "./C/" + location + "/" + target, newF.length());
-                nombre.setText(target);
-                ruta.setText(location);
+                txt_name1.setText(target);
                 ta_data.setText(new String(datos));
 
                 jd_editFile.setModal(true);
@@ -497,7 +484,19 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6MouseClicked
 
     private void jButton9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton9MouseClicked
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            String nombre = txt_name1.getText();
+            String mensaje = ta_data.getText();
+            byte[] b = mensaje.getBytes();
+            inter.uploadFileToServer(b, "./C/" + location + "/" + nombre, b.length);
+            JOptionPane.showMessageDialog(this, "Archivo Editado");
+            txt_name.setText("");
+            txt_ruta.setText("");
+            txta_mensaje.setText("");
+        } catch (RemoteException ex) {
+            Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton9MouseClicked
 
     /**
@@ -596,7 +595,6 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
@@ -606,11 +604,10 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JDialog jd_editFile;
     private javax.swing.JTree jt_directory;
     private javax.swing.JDialog mensaje;
-    private javax.swing.JTextField nombre;
-    private javax.swing.JTextField ruta;
     private javax.swing.JTextArea ta_data;
     private javax.swing.JTextArea ta_mensaje;
     private javax.swing.JTextField txt_name;
+    private javax.swing.JTextField txt_name1;
     private javax.swing.JTextField txt_ruta;
     private javax.swing.JTextArea txta_mensaje;
     // End of variables declaration//GEN-END:variables
