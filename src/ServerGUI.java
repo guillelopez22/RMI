@@ -99,15 +99,15 @@ public class ServerGUI extends javax.swing.JFrame {
                 inter.setServerConsole(ta_status);
 
                 // Interaccion con la consola
-                inter.addBinnacle("Server: Server is up and running on port: " + port);
+                inter.addBinnacle("[Server] Server is up and running on port: " + port + ".");
                 connnected = true;
 
             } else {
-                inter.addBinnacle("Server: Server is already up and running on port: " + port);
+                inter.addBinnacle("[Server] Server is already up and running on port: " + port + ".");
             }
         } catch (Exception e) {
             try {
-                inter.addBinnacle("Server: Server launch failed: " + e.getMessage());
+                inter.addBinnacle("[Server] Server launch failed: " + e.getMessage() + ".");
             } catch (Exception ex) {
                 System.out.println("Server launch failed: " + e.getMessage());
             }

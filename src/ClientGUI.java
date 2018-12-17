@@ -360,22 +360,24 @@ public class ClientGUI extends javax.swing.JFrame {
         try {
             ta_mensaje.setVisible(true);
             myreg = LocateRegistry.getRegistry("192.168.0.14", port);
-
+            
             inter = (FSInterface) myreg.lookup("remoteObject");
             ta_mensaje.setText("Servicio Listo =)");
-
+            
             mensaje.setModal(true);
             mensaje.pack();
             mensaje.setVisible(true);
             mensaje.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             this.idClient = inter.addClient();
-            inter.addBinnacle("Client " + this.idClient + ": Client connected.");
-
+            inter.addBinnacle("[Client " + this.idClient + "] Client connected.");
+            jLabel1.setText("CLIENT " + this.idClient);
+            jd_editFile.setVisible(false);
             //fillTree(root, files[0].getParentFile());
             load();
-
+            
         } catch (Exception e) {
             ta_mensaje.setText("Something went wrong");
+            jd_editFile.setVisible(false);
         }
 
     }//GEN-LAST:event_jButton1MouseClicked
@@ -391,7 +393,7 @@ public class ClientGUI extends javax.swing.JFrame {
             String ruta = JOptionPane.showInputDialog(this, "Ingrese ruta (Vacio es C:): ");
             boolean bool = inter.createDirectory("./C/" + ruta + "/" + nombre);
             if (bool) {
-                inter.addBinnacle("Client " + this.idClient + ": The directory \"./C/" + ruta + "" + nombre + "\" has been created.");
+                inter.addBinnacle("[Client " + this.idClient + "] The directory \"C:/" + ruta + "" + nombre + "\" has been created.");
             }
             System.out.println("directory created :" + bool);
             load();
@@ -400,7 +402,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         } catch (Exception e) {
         }
-
+        
 
     }//GEN-LAST:event_jButton2MouseClicked
 
@@ -411,7 +413,7 @@ public class ClientGUI extends javax.swing.JFrame {
             boolean bool = inter.removeDirectoryOrFile("./C/" + ruta);
             System.out.println("directory deleted :" + bool);
             if (bool) {
-                inter.addBinnacle("Client " + this.idClient + ": The directory \"./C" + ruta + "\" has been deleted.");
+                inter.addBinnacle("[Client " + this.idClient + "] The directory \"C:/" + ruta + "\" has been deleted.");
             }
             load();
             if (!bool) {
@@ -433,18 +435,21 @@ public class ClientGUI extends javax.swing.JFrame {
             String location = JOptionPane.showInputDialog(this, "Nueva Ubicacion: ");
             if (!nombre.contains(".txt")) {
                 boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
-                boolean movido = inter.createDirectory("./C/" + location + "/" + nombre);
+                boolean movido = false;
+                if (borrado) {
+                    movido = inter.createDirectory("./C/" + location + "/" + nombre);
+                }
                 System.out.println("Borrado: " + borrado);
                 System.out.println("Movido: " + movido);
                 if (movido && borrado) {
-                    inter.addBinnacle("Client " + this.idClient + ": The file \"" + nombre + "\" has been moved from \"./C/" + target + "\" to \"./C/" + location + "\".");
+                    inter.addBinnacle("[Client " + this.idClient + "] The file \"" + nombre + "\" has been moved from \"C:/" + target + "\" to \"C:/" + location + "\".");
                 }
             } else {
                 byte[] copy = inter.downloadFileFromServer("./C/" + target + "/" + nombre);
                 boolean borrado = inter.removeDirectoryOrFile("./C/" + target + "/" + nombre);
                 inter.uploadFileToServer(copy, "./C/" + location + "/" + nombre, copy.length);
                 if (borrado) {
-                    inter.addBinnacle("Client " + this.idClient + ": The file \"" + nombre + "\" has been moved from \"./C/" + target + "\" to \"./C/" + location + "\".");
+                    inter.addBinnacle("[Client " + this.idClient + "] The file \"" + nombre + "\" has been moved from \"C:/" + target + "\" to \"C:/" + location + "\".");
                 }
             }
             load();
@@ -464,7 +469,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
         try {
             // TODO add your handling code here:
-            String nombre = txt_name.getText();
+            String nombre = txt_name.getText().replaceAll(".txt", "");
             if (nombre.replaceAll(" ", "").isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Campo vacío.");
                 throw new Exception("Vacio");
@@ -474,7 +479,7 @@ public class ClientGUI extends javax.swing.JFrame {
             byte[] b = mensaje.getBytes();
             inter.uploadFileToServer(b, "./C/" + ruta + "/" + nombre + ".txt", b.length);
             JOptionPane.showMessageDialog(this, "Archivo Creado");
-            inter.addBinnacle("Client " + this.idClient + ": The file \"" + nombre + "\" has been created at \"./C/" + ruta + "\".");
+            inter.addBinnacle("[Client " + this.idClient + "] The file \"" + nombre + ".txt\" has been created at \"C:/" + ruta + "\".");
             txt_name.setText("");
             txt_ruta.setText("");
             txta_mensaje.setText("");
@@ -520,17 +525,17 @@ public class ClientGUI extends javax.swing.JFrame {
                 }
                 System.out.println("File contents: " + newF);
                 inter.uploadFileToServer(newF.getBytes(), "./C/" + location + "/" + target, newF.length());
-                //inter.addBinnacle("Client " + this.idClient + ": The file \"" + target + "\" has been modified");
+                //inter.addBinnacle("[Client " + this.idClient + "] The file \"" + target + "\" has been modified");
 
                 txt_name1.setText(target);
-                ta_data.setText(new String(datos));
-
+                ta_data.setText(new String(datos).replaceFirst("0\r\n", ""));
+                
                 jd_editFile.setModal(true);
                 jd_editFile.pack();
                 jd_editFile.setVisible(true);
                 jd_editFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             }
-
+            
         } catch (Exception e) {
             //System.out.println(e);
         }
@@ -545,12 +550,12 @@ public class ClientGUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Campo vacío.");
                 throw new Exception("Vacio");
             }
-            String mensaje = ta_data.getText();
+            String mensaje = "0\r\n" + ta_data.getText();
             byte[] b = mensaje.getBytes();
             inter.uploadFileToServer(b, "./C/" + location + "/" + nombre, b.length);
             JOptionPane.showMessageDialog(this, "Archivo Editado");
-            inter.addBinnacle("Client " + this.idClient + ": The file \"" + target + "\" has been modified");
-
+            inter.addBinnacle("[Client " + this.idClient + "] The file \"" + target + "\" has been modified");
+            
             txt_name.setText("");
             txt_ruta.setText("");
             txta_mensaje.setText("");
@@ -564,7 +569,7 @@ public class ClientGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "Hasta Luego!");
         try {
-            inter.addBinnacle("Client " + this.idClient + ": This client has disconnected.");
+            inter.addBinnacle("[Client " + this.idClient + "] Client disconnected.");
         } catch (Exception ex) {
         }
         System.exit(0);
@@ -572,16 +577,15 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7MouseClicked
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        JOptionPane.showMessageDialog(this, "Hasta Luego!");
         try {
-            inter.addBinnacle("Client " + this.idClient + ": This client has disconnected.");
+            inter.addBinnacle("[Client " + this.idClient + "] Client disconnected.");
         } catch (Exception ex) {
         }
     }//GEN-LAST:event_formWindowClosing
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         try {
-            inter.addBinnacle("Client " + this.idClient + ": This client has disconnected.");
+            inter.addBinnacle("[Client " + this.idClient + "] Client disconnected.");
         } catch (Exception ex) {
         }
     }//GEN-LAST:event_formWindowClosed
@@ -620,7 +624,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
     }
-
+    
     public void load() {
         try {
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("server:", true);
@@ -630,9 +634,9 @@ public class ClientGUI extends javax.swing.JFrame {
             jt_directory.setModel(tree.getModel());
         } catch (RemoteException ex) {
         }
-
+        
     }
-
+    
     public void fillTree1(DefaultMutableTreeNode dir, File[] files) {
         DefaultMutableTreeNode child;
         for (int i = 0; i < files.length; i++) {
@@ -647,10 +651,10 @@ public class ClientGUI extends javax.swing.JFrame {
                 } catch (RemoteException ex) {
                 }
             }
-
+            
         }
     }
-
+    
     public void fillTree(DefaultMutableTreeNode dir, File f) {
         if (!f.isDirectory()) {
             DefaultMutableTreeNode child = new DefaultMutableTreeNode(f.getName());
